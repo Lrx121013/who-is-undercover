@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!manifest\\..*\\.webmanifest|.*\\.(js|css|map|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot)).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

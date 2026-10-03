@@ -1,0 +1,38 @@
+/* From Uiverse.io by anniekoop - 新粗野主义输入框 */
+.brutal-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brutal-wrap .input {
+  max-width: 190px;
+  padding: 0.875rem;
+  font-size: 1rem;
+  border: 1.5px solid #000;
+  border-radius: 0.5rem;
+  box-shadow: 2.5px 3px 0 #000;
+  outline: none;
+  transition: ease 0.25s;
+}
+.brutal-wrap .input:focus {
+  box-shadow: 5.5px 7px 0 black;
+}
+.brutal-wrap .input::placeholder {
+  color: #9ca3af;
+}
+.brutal-wrap .input--full {
+  max-width: none;
+  width: 100%;
+}
+.brutal-wrap .input--dark {
+  border-color: #fff;
+  box-shadow: 2.5px 3px 0 #fff;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+}
+.brutal-wrap .input--dark:focus {
+  box-shadow: 5.5px 7px 0 #fff;
+}
+.brutal-wrap .input--dark::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}

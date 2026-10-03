@@ -1,0 +1,25 @@
+/* From Uiverse.io by Mayurwaghgpr - Emoji 反应栏（Tailwind + 气泡变量） */
+.emoji-btn::before {
+  content: var(--tip, "");
+  position: absolute;
+  top: -1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1rem;
+  padding: 0 4px;
+  font-size: 0.6rem;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 20;
+}
+.emoji-btn:hover::before {
+  opacity: 1;
+}

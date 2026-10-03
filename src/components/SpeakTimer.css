@@ -1,0 +1,18 @@
+/* 发言计时器：复用时钟样式选择器（by SelfMadeSystem）的表盘 CSS */
+.speak-timer .clock-input {
+  width: 84px;
+  height: 84px;
+}
+.speak-timer .dial {
+  width: 34px;
+  transition: none;
+}
+.speak-timer .clock-readout {
+  font-size: 20px;
+}
+.speak-timer--danger .dial {
+  background-color: #ef4444b0;
+}
+.speak-timer--danger .clock-readout {
+  color: #ef4444;
+}

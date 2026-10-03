@@ -1,0 +1,73 @@
+/* From Uiverse.io by liyaxu123 - 逐字浮动标签输入框 */
+.form-control {
+  position: relative;
+  margin: 20px 0 40px;
+  width: 190px;
+}
+
+.form-control input {
+  background-color: transparent;
+  border: 0;
+  border-bottom: 2px #fff solid;
+  display: block;
+  width: 100%;
+  padding: 15px 0;
+  font-size: 18px;
+  color: #fff;
+}
+
+.form-control input:focus,
+.form-control input:valid {
+  outline: 0;
+  border-bottom-color: lightblue;
+}
+
+.form-control label {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  pointer-events: none;
+}
+
+.form-control label span {
+  display: inline-block;
+  font-size: 18px;
+  min-width: 5px;
+  color: #fff;
+  transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.form-control input:focus + label span,
+.form-control input:valid + label span {
+  color: lightblue;
+  transform: translateY(-30px);
+}
+
+/* ---- 追加：主题适配 / 全宽 ---- */
+.form-control--full {
+  width: 100%;
+}
+:root:not(.dark) .form-control input {
+  border-bottom-color: rgba(15, 23, 42, 0.35);
+  color: #0f172a;
+}
+:root:not(.dark) .form-control label span {
+  color: rgba(15, 23, 42, 0.45);
+}
+:root:not(.dark) .form-control input:focus,
+:root:not(.dark) .form-control input:valid {
+  border-bottom-color: #0284c7;
+}
+:root:not(.dark) .form-control input:focus + label span,
+:root:not(.dark) .form-control input:valid + label span {
+  color: #0284c7;
+}
+.dark .form-control input {
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+.dark .form-control label span {
+  color: rgba(255, 255, 255, 0.65);
+}
+:root:not(.dark) .form-control input::placeholder {
+  color: rgba(15, 23, 42, 0.3);
+}

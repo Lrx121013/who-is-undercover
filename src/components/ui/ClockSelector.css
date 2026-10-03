@@ -1,0 +1,156 @@
+/* From Uiverse.io by SelfMadeSystem - 时钟样式选择器 */
+/* 说明：原版用 #v1..#v6 / #l1..#l6 全局 ID，多实例会冲突；
+   这里改用 .clock-input 内的 nth-of-type 定位，视觉效果完全一致。 */
+.clock-input {
+  display: flex;
+  position: relative;
+  width: 60px;
+  height: 60px;
+  --a: #0004, #fff4;
+  --b: var(--a), var(--a), var(--a);
+  --c: var(--b), var(--b), var(--b);
+  background:
+    conic-gradient(
+      from -2deg,
+      #efefff88,
+      #00000088,
+      #efefff88,
+      #00000088,
+      #efefff88
+    ),
+    radial-gradient(var(--c), var(--c)),
+    radial-gradient(circle at 12% 12%, #efefff, #9999a4);
+  background-size: calc(100% + 8px) calc(100% + 8px);
+  background-position: -4px -4px;
+  border: 4px solid #0005;
+  border-radius: 50%;
+}
+
+.clock-input input {
+  display: none;
+  pointer-events: none;
+}
+
+.dial {
+  position: absolute;
+  width: 26px;
+  height: 4px;
+  border-radius: 99px;
+  background-color: #000b;
+  top: calc(50% - 2px);
+  left: calc(50% - 2px);
+  transform-origin: 2px 50%;
+  pointer-events: none;
+  transition: 0.15s;
+  animation: owo 0.15s;
+}
+
+@keyframes owo {
+  0% {
+    transform: rotate(-60deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.clock-input label {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+}
+
+.clock-input input:nth-of-type(1):checked ~ label:nth-of-type(2) {
+  z-index: 2;
+}
+.clock-input input:nth-of-type(1):checked ~ .dial {
+  transform: rotate(0deg);
+}
+
+.clock-input input:nth-of-type(2):checked ~ label:nth-of-type(3) {
+  z-index: 2;
+}
+.clock-input input:nth-of-type(2):checked ~ .dial {
+  transform: rotate(60deg);
+  animation: none;
+}
+
+.clock-input input:nth-of-type(3):checked ~ label:nth-of-type(4) {
+  z-index: 2;
+}
+.clock-input input:nth-of-type(3):checked ~ .dial {
+  transform: rotate(120deg);
+  animation: none;
+}
+
+.clock-input input:nth-of-type(4):checked ~ label:nth-of-type(5) {
+  z-index: 2;
+}
+.clock-input input:nth-of-type(4):checked ~ .dial {
+  transform: rotate(180deg);
+  animation: none;
+}
+
+.clock-input input:nth-of-type(5):checked ~ label:nth-of-type(6) {
+  z-index: 2;
+}
+.clock-input input:nth-of-type(5):checked ~ .dial {
+  transform: rotate(240deg);
+  animation: none;
+}
+
+.clock-input input:nth-of-type(6):checked ~ label:nth-of-type(1) {
+  z-index: 2;
+}
+.clock-input input:nth-of-type(6):checked ~ .dial {
+  transform: rotate(300deg);
+  animation: none;
+}
+
+.notch {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 1px;
+  background-color: #fffc;
+  transform: translate(-50%) rotate(calc((var(--n) - 1) * 60deg)) translateX(38px);
+  counter-reset: section;
+}
+
+.notch::before {
+  content: counter(section);
+  position: absolute;
+  counter-set: section var(--n);
+  color: #fffc;
+  transform: translate(12px, -50%) rotate(calc((var(--n) - 1) * -60deg));
+  font-size: 12px;
+}
+
+/* ---- 追加：中央读数 ---- */
+.clock-readout {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  text-shadow: 0 1px 0 #fff8;
+  pointer-events: none;
+}
+.clock-input__caption {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+.dark .clock-input__caption {
+  color: #cbd5e1;
+}
+.dark .clock-readout {
+  color: #f8fafc;
+  text-shadow: 0 1px 2px #000c;
+}
