@@ -18,7 +18,7 @@ interface AuthCtx {
   emailNeedsConfirmation: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, nickname: string) => Promise<{ uid: string | null }>
-  signInWithMicrosoft: () => Promise<void>
+  sendMagicLink: (email: string) => Promise<void>
   signInAsGuest: () => Promise<void>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
@@ -120,9 +120,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [loadProfile],
   )
 
-  const signInWithMicrosoft = useCallback(async () => {
-    const { error } = await nhost.auth.signIn({ provider: 'azuread' } as any) as any
-    if (error) throw new Error(translateOAuthError(error.message))
+  const sendMagicLink = useCallback(async (email: string) => {
+    const { error } = await nhost.auth.signIn({ email } as any) as any
+    if (error) throw new Error(translateAuthError(error.message))
   }, [])
 
   const signInAsGuest = useCallback(async () => {
@@ -165,7 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       emailNeedsConfirmation,
       signIn,
       signUp,
-      signInWithMicrosoft,
+      sendMagicLink,
       signInAsGuest,
       signOut,
       resetPassword,
@@ -173,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refreshProfile,
       resendConfirmEmail,
     }),
-    [session, profile, loading, emailNeedsConfirmation, signIn, signUp, signInWithMicrosoft, signInAsGuest, signOut, resetPassword, updatePassword, refreshProfile, resendConfirmEmail],
+    [session, profile, loading, emailNeedsConfirmation, signIn, signUp, sendMagicLink, signInAsGuest, signOut, resetPassword, updatePassword, refreshProfile, resendConfirmEmail],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

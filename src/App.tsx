@@ -5,6 +5,7 @@ import { ToastProvider } from './hooks/useToast'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import PencilLoader from './components/ui/PencilLoader'
+import CookieBanner from './components/CookieBanner'
 
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -102,6 +103,7 @@ export default function App() {
       </AuthProvider>
       </ToastProvider>
       {intro && <PencilLoader fullscreen text="正在洗牌，准备出题…" />}
+      <CookieBanner />
     </>
   )
 }

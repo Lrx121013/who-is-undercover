@@ -71,9 +71,15 @@ export default function WordPackCreate() {
 
   const valid = rows.filter((r) => r.civilian.trim() && r.undercover.trim())
 
-  const save = async (sync: boolean) => {
-    if (name.trim().length < 2) return toast('先给词库起个名字', 'error')
-    if (valid.length === 0) return toast('至少填写一组词对', 'error')
+  const save = async (sync: boolean): Promise<boolean> => {
+    if (name.trim().length < 2) {
+      toast('先给词库起个名字', 'error')
+      return false
+    }
+    if (valid.length === 0) {
+      toast('至少填写一组词对', 'error')
+      return false
+    }
     setLoading(true)
     try {
       const pack = await createPack(name.trim(), desc.trim(), isPublic)
@@ -88,8 +94,10 @@ export default function WordPackCreate() {
       )
       toast(sync ? `已保存并同步「${pack.name}」到云端` : `已保存「${pack.name}」`, 'success')
       navigate('/word-packs/mine')
+      return true
     } catch (e) {
       toast((e as Error).message, 'error')
+      return false
     } finally {
       setLoading(false)
     }
@@ -122,7 +130,7 @@ export default function WordPackCreate() {
       />
 
       <section className="panel p-6">
-        <div className="flex flex-wrap items-end gap-6">
+        <div className="grid items-end gap-6 sm:grid-cols-2">
           <PerCharInput label="词库名称" value={name} onChange={setName} maxLength={14} />
           <FloatingInput label="简介" value={desc} onChange={setDesc} maxLength={40} required={false} />
         </div>

@@ -2,12 +2,11 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
-import MicrosoftButton from '../components/MicrosoftButton'
 import { createVerificationEmail } from '../lib/verifyEmail'
 import { DoodleButton, GoBackButton } from '../components/ui'
 
 export default function Register() {
-  const { signUp, signInWithMicrosoft } = useAuth()
+  const { signUp } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
   const [nickname, setNickname] = useState('')
@@ -16,20 +15,8 @@ export default function Register() {
   const [confirm, setConfirm] = useState('')
   const [invite, setInvite] = useState('')
   const [loading, setLoading] = useState(false)
-  const [msLoading, setMsLoading] = useState(false)
   const [error, setError] = useState('')
   const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false)
-
-  const microsoft = async () => {
-    setError('')
-    setMsLoading(true)
-    try {
-      await signInWithMicrosoft()
-    } catch (e) {
-      setError((e as Error).message)
-      setMsLoading(false)
-    }
-  }
 
   const submit = async () => {
     setError('')
@@ -167,11 +154,9 @@ export default function Register() {
 
             <div className="flex w-full items-center gap-3 text-xs opacity-40">
               <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
-              或
+              已给过邮箱了？
               <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
             </div>
-
-            <MicrosoftButton onClick={microsoft} loading={msLoading} label="使用 Microsoft 注册 / 登录" />
 
             <p className="text-sm opacity-60">
               已有账号？

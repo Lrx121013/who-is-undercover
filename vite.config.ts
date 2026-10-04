@@ -22,16 +22,23 @@ const sendVerificationDev: NextHandleFunction = (req, res, next) => {
         res.end(JSON.stringify({ ok: false, error: 'missing MAILTRAP_API_KEY' }))
         return
       }
-      const html = `<div style="font-family:'PingFang SC',sans-serif;max-width:560px;margin:0 auto;padding:32px 20px;background:#f6f7f4"><h1 style="font-size:20px">喂，${nickname || '玩家'}</h1><p>点击下面链接完成邮箱验证：</p><a href="${link}" style="display:inline-block;padding:12px 28px;background:#191a18;color:#fff;border-radius:8px;text-decoration:none">验证我的邮箱</a><p style="word-break:break-all;color:#888;font-size:12px">${link}</p></div>`
       const r = await fetch(MAILTRAP, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Api-Token': key },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
         body: JSON.stringify({
-          from: { email: 'no-reply@wiu.app', name: 'WIU' },
+          from: { email: 'hello@notifications.lrxweb.qzz.io', name: 'Mailtrap Test' },
           to: [{ email }],
-          subject: '验证你的邮箱 · 谁是卧底',
-          html,
-          category: 'email verification',
+          template_uuid: '79ec6862-399b-48f9-b699-1cab3a491708',
+          template_variables: {
+            name: nickname || '',
+            link: link || '',
+            verification_url: link || '',
+            verification_link: link || '',
+            verify_url: link || '',
+            verify_link: link || '',
+            url: link || '',
+            magic_link: link || '',
+          },
         }),
       })
       const j = await r.json().catch(() => ({}))
@@ -55,5 +62,5 @@ export default defineConfig({
       },
     },
   ],
-  server: { port: 5173 },
+  server: { port: 80 },
 })

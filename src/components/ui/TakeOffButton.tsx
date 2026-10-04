@@ -11,8 +11,8 @@ interface Props {
   compact?: boolean
   disabled?: boolean
   className?: string
-  /** 点击后执行（返回 Promise 时才显示发送态切换） */
-  onAction?: () => void | Promise<void>
+  /** 点击后执行；返回 false 的 Promise 不显示发送成功态 */
+  onAction?: () => unknown | Promise<unknown>
   onClick?: () => void
   children?: React.ReactNode
 }
@@ -50,8 +50,9 @@ export default function TakeOffButton({
       return
     }
     btnRef.current?.focus()
-    await onAction()
-    setSent(true)
+    const r = await onAction() as unknown as boolean | undefined
+    if (r !== false) setSent(true)
+    else setSent(false)
   }
 
   return (

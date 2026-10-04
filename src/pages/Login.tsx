@@ -2,17 +2,16 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
-import MicrosoftButton from '../components/MicrosoftButton'
-import { DoodleButton, GoBackButton } from '../components/ui'
+import { GoBackButton } from '../components/ui'
 
 export default function Login() {
-  const { signIn, signInAsGuest, signInWithMicrosoft, emailNeedsConfirmation, resendConfirmEmail } = useAuth()
+  const { signIn, emailNeedsConfirmation, resendConfirmEmail, sendMagicLink } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [msLoading, setMsLoading] = useState(false)
+  const [magicSent, setMagicSent] = useState(false)
   const [error, setError] = useState('')
 
   const submit = async () => {
@@ -33,24 +32,18 @@ export default function Login() {
     }
   }
 
-  const microsoft = async () => {
+  const magic = async () => {
     setError('')
-    setMsLoading(true)
+    if (!email.trim()) {
+      setError('请输入邮箱后再发送登录链接')
+      return
+    }
     try {
-      await signInWithMicrosoft()
+      await sendMagicLink(email.trim())
+      setMagicSent(true)
+      toast('登录链接已发送，请去邮箱查收', 'success')
     } catch (e) {
       setError((e as Error).message)
-      setMsLoading(false)
-    }
-  }
-
-  const guest = async () => {
-    try {
-      await signInAsGuest()
-      toast('游客模式开启', 'success')
-      navigate('/home')
-    } catch (e) {
-      toast((e as Error).message, 'error')
     }
   }
 
@@ -62,6 +55,10 @@ export default function Login() {
       setError((e as Error).message)
     }
   }
+
+  const inputCls =
+    'w-full rounded-xl border border-black/8 bg-white/50 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 dark:border-white/10 dark:bg-white/5'
+  const labelCls = 'mb-1.5 block text-xs font-bold tracking-wide opacity-60'
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -148,9 +145,13 @@ export default function Login() {
 
           {/* CTA */}
           <div className="mt-7 flex flex-col items-center gap-4">
-            <DoodleButton variant="C" onClick={submit} loading={loading} size="full">
-              登 录
-            </DoodleButton>
+            <button
+              onClick={submit}
+              disabled={loading}
+              className="w-full rounded-card border border-[var(--ink)] bg-[var(--ink)] px-4 py-3 text-body font-semibold text-[var(--bg)] transition-opacity hover:opacity-90 disabled:opacity-45"
+            >
+              {loading ? '登录中…' : '登录'}
+            </button>
 
             <div className="flex w-full items-center gap-3 text-xs opacity-40">
               <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
@@ -158,7 +159,10 @@ export default function Login() {
               <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
             </div>
 
-            <MicrosoftButton onClick={microsoft} loading={msLoading} />
+            <button onClick={magic} className="text-sm font-semibold opacity-60 transition hover:opacity-90 underline underline-offset-4">
+              发送“魔法链接”到我的邮箱
+            </button>
+            {magicSent && <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-300">链接已发送,请检查 {email}</p>}
 
             <div className="flex w-full items-center justify-between text-sm">
               <Link to="/register" className="font-bold text-indigo-500 transition hover:opacity-80">
@@ -168,13 +172,6 @@ export default function Login() {
                 忘记密码？
               </Link>
             </div>
-
-            <button
-              onClick={guest}
-              className="text-sm font-bold opacity-50 transition hover:opacity-90"
-            >
-              游客试玩 →
-            </button>
           </div>
         </div>
       </div>

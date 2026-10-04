@@ -1,6 +1,5 @@
 import { cn } from '../../lib/utils'
 import DashSpinLoader from './DashSpinLoader'
-import './DoodleButton.css'
 
 interface Props {
   children: React.ReactNode
@@ -13,7 +12,7 @@ interface Props {
   type?: 'button' | 'submit'
 }
 
-/** 涂鸦线条按钮（by himanshu9682）：主 CTA，A/B/C 三配色，可内嵌小加载 */
+/** 统一 CTA 按钮：替代原涂鸦线按钮，保持 variant/size/loading 语义 */
 export default function DoodleButton({
   children,
   variant = 'A',
@@ -24,33 +23,34 @@ export default function DoodleButton({
   className,
   type = 'button',
 }: Props) {
+  const tone =
+    variant === 'C'
+      ? 'bg-[var(--accent)] text-white border-transparent hover:opacity-90'
+      : variant === 'B'
+        ? 'bg-[var(--raised-2)] text-[var(--ink)] border-[var(--rule-2)] hover:bg-[var(--raised)]'
+        : 'bg-[var(--ink)] text-[var(--bg)] border-[var(--ink)] hover:opacity-90'
+  const dims =
+    size === 'sm'
+      ? 'px-3 py-1.5 text-small'
+      : size === 'full'
+        ? 'w-full px-4 py-2.5 text-body'
+        : 'px-4 py-2.5 text-body'
+
   return (
-    <div className={cn('doodle-scope', size === 'full' && 'w-full')}>
-      <button
-        type={type}
-        onClick={onClick}
-        disabled={disabled || loading}
-        className={cn(
-          'button',
-          `type--${variant}`,
-          size === 'sm' && 'button--sm',
-          size === 'full' && 'button--full',
-          className,
-        )}
-      >
-        <p className="button__text">
-          <span>{children}</span>
-        </p>
-        <div className="button__line" />
-        <div className="button__line" />
-        <div className="button__drow1" />
-        <div className="button__drow2" />
-        {loading && (
-          <span className="button__loading">
-            <DashSpinLoader color="var(--line_color)" />
-          </span>
-        )}
-      </button>
-    </div>
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled || loading}
+      className={cn(
+        'inline-flex items-center justify-center gap-2 rounded-card border font-semibold transition-all duration-150 disabled:pointer-events-none disabled:opacity-45',
+        tone,
+        dims,
+        size === 'full' && 'w-full',
+        className,
+      )}
+    >
+      {loading && <DashSpinLoader size={14} color="currentColor" />}
+      {children}
+    </button>
   )
 }

@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
-import { useToast } from '../hooks/useToast'
 import { Btn, CardPair, Rule } from '../components/primitives'
 import {
   IconMoon,
@@ -27,8 +26,7 @@ const ROLES = ['undercover', 'white', 'detective', 'prophet', 'double', 'third_p
 
 export default function Landing() {
   const { theme, toggle } = useTheme()
-  const { session, signInAsGuest } = useAuth()
-  const { toast } = useToast()
+  const { session } = useAuth()
   const navigate = useNavigate()
   const dark = theme === 'dark'
 
@@ -37,16 +35,8 @@ export default function Landing() {
     if (session) navigate('/home', { replace: true })
   }, [session, navigate])
 
-  /** 一句话开局：没账号就先开游客身份，直接进建房 */
-  const start = async () => {
-    try {
-      if (!session) await signInAsGuest()
-      navigate('/rooms/create')
-    } catch (e) {
-      navigate('/login')
-      toast((e as Error).message, 'error')
-    }
-  }
+  /** 一句话开局：先去登录，再从建房开始 */
+  const start = () => navigate('/login')
 
   return (
     <div className="flex min-h-screen flex-col">
