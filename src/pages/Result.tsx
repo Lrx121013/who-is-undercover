@@ -10,10 +10,17 @@ import {
   EmojiBar,
   DoodleButton,
   TakeOffButton,
-  StrokeCheckbox,
 } from '../components/ui'
-import { getRoomByCode, getGame, getGamePlayers, listMembers, updateRoomSettings } from '../lib/api'
-import { supabase } from '../lib/supabase'
+import {
+  getRoomByCode,
+  getGame,
+  getGamePlayers,
+  listMembers,
+  updateRoomSettings,
+  listRoomVotes,
+  resetRoomMembers,
+  resetRoomForRestart,
+} from '../lib/api'
 import { roleLabel } from '../lib/game'
 import { avatarDataUri, cn, copyText } from '../lib/utils'
 import type { Game, GamePlayer, RoomMember, VoteRow } from '../types/db'
@@ -34,7 +41,6 @@ export default function Result() {
   const [game, setGame] = useState<Game | null>(null)
   const [players, setPlayers] = useState<GamePlayer[]>([])
   const [votes, setVotes] = useState<VoteRow[]>([])
-  const [saved, setSaved] = useState(true)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -47,12 +53,19 @@ export default function Result() {
       setMembers(ms)
       setGame(g)
       if (g) {
-        const [gp, vs] = await Promise.all([
+        const [gp, all] = await Promise.all([
           getGamePlayers(g.id),
-          supabase.from('votes').select('*').eq('room_id', r.id).order('round'),
+          listRoomVotes(r.id),
         ])
         setPlayers(gp)
-        setVotes((vs.data as VoteRow[]) ?? [])
+        // votes 没有 game_id，只能借时间窗口切割：只看本局时间段内的票
+        const inThisGame = all.filter((v) => {
+          if (!v.created_at) return true
+          if (g.started_at && new Date(v.created_at) < new Date(g.started_at)) return false
+          if (g.ended_at && new Date(v.created_at) > new Date(g.ended_at)) return false
+          return true
+        })
+        setVotes(inThisGame)
       }
       setLoading(false)
     })()
@@ -99,19 +112,15 @@ export default function Result() {
       navigate(`/rooms/${code}`)
       return
     }
-    await updateRoomSettings(room.id, {
-      ...room.settings,
-      game_phase: undefined,
-      round: undefined,
-      current_speaker: null,
-      phase_ends_at: null,
-      speak_order_ids: undefined,
-    })
-    await supabase
-      .from('room_members')
-      .update({ is_ready: false, is_alive: true, role: null, word: null })
-      .eq('room_id', room.id)
-    await supabase.from('rooms').update({ status: 'waiting' }).eq('id', room.id)
+    const next = { ...room.settings } as Record<string, unknown>
+    delete next.game_phase
+    delete next.round
+    delete next.speak_order_ids
+    next.current_speaker = null
+    next.phase_ends_at = null
+    await updateRoomSettings(room.id, next as typeof room.settings)
+    await resetRoomMembers(room.id)
+    await resetRoomForRestart(room.id)
     toast('已重置房间，等待准备', 'success')
     navigate(`/rooms/${code}`)
   }
@@ -149,12 +158,12 @@ export default function Result() {
         title="本局结算"
         sub={`房间 ${code} · ${game?.ended_at ? new Date(game.ended_at).toLocaleString() : ''}`}
         right={
-          <StrokeCheckbox
-            checked={saved}
-            onChange={setSaved}
-            label="保存到我的战绩"
-            disabled
-          />
+          <button
+            className="rounded-card border border-[var(--rule-2)] px-3 py-1.5 text-small font-semibold transition-colors hover:bg-[var(--raised-2)]"
+            onClick={share}
+          >
+            分享本局
+          </button>
         }
       />
 

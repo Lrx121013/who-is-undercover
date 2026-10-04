@@ -1,9 +1,9 @@
-/* From Uiverse.io by Admin12121 - 3D 盒子加载器 */
+/* From Uiverse.io by Admin12121 - 3D 盒子加载�?*/
 .box-scope .loader {
   --duration: 3s;
-  --primary: rgba(39, 94, 254, 1);
-  --primary-light: #2f71ff;
-  --primary-rgba: rgba(39, 94, 254, 0);
+  --primary: var(--accent);
+  --primary-light: var(--accent);
+  --primary-rgba: var(--accent-soft);
   width: 200px;
   height: 320px;
   position: relative;

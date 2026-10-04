@@ -9,7 +9,6 @@ import {
   GoBackButton,
   EmojiBar,
   GlassCheckbox,
-  MaterialSwitch,
   BrutalInput,
 } from '../components/ui'
 import {
@@ -30,7 +29,7 @@ import {
 } from '../lib/api'
 import GameConfig from '../components/GameConfig'
 import { roleLabel, rolePoolCounts, DEFAULT_SETTINGS, MIN_PLAYERS } from '../lib/game'
-import { avatarDataUri, cn, copyText, mergeMessage } from '../lib/utils'
+import { avatarDataUri, cn, copyText } from '../lib/utils'
 import type { Message, Profile, Room, RoomMember, RoomSettings } from '../types/db'
 
 export default function RoomLobby() {
@@ -77,9 +76,8 @@ export default function RoomLobby() {
     const un2 = subscribe('room-itself', 'rooms', `id=eq.${room.id}`, () => {
       void getRoomById(room.id).then(setRoom)
     })
-    const un3 = subscribe('room-chat', 'messages', `room_id=eq.${room.id}`, (payload) => {
-      const row = (payload as { new: Message }).new
-      if (row) setMessages((m) => mergeMessage(m, row))
+    const un3 = subscribe('room-chat', 'messages', `room_id=eq.${room.id}`, () => {
+      void listMessages(room.id).then(setMessages)
     })
     return () => {
       un1()
@@ -348,12 +346,11 @@ export default function RoomLobby() {
               ))}
             </div>
             <div className="mt-4 space-y-2.5 border-t border-black/5 pt-4 dark:border-white/10">
-              <MaterialSwitch
-                checked={s.password_room ?? false}
-                onChange={async (v) => room && updateRoomSettings(room.id, { ...s, password_room: v })}
-                label="密码房"
-                disabled={!isHost}
-              />
+              {room.password ? (
+                <p className="text-xs faint">本房间有密码 · 加入时需输入</p>
+              ) : (
+                <p className="text-xs faint">本房间无密码 · 任何人可加入</p>
+              )}
               {isHost && (
                 <DoodleButton variant="B" size="sm" onClick={() => setConfigOpen((v) => !v)}>
                   {configOpen ? '收起自由配置' : '自由配置'}

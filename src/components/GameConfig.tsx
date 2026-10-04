@@ -75,7 +75,7 @@ export default function GameConfig({ settings, onChange, playerCap, disabled, sh
         list.map((p) => ({
           id: p.id,
           name: p.name,
-          cats: [...new Set((p.word_pairs ?? []).map((x) => x.category).filter(Boolean) as string[])],
+          cats: [...new Set((p.word_pairs ?? []).map((x: any) => x.category).filter(Boolean) as string[])],
         })),
       )
     })

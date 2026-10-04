@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import { FloatingInput, DoodleButton, GoBackButton, SpotlightLoader } from '../components/ui'
 
-/** 重置密码：从邮件恢复链接进入（Supabase 自动携带 token） */
+/** 重置密码：从邮件恢复链接进入（Nhost 自动携带 token） */
 export default function ResetPassword() {
   const { updatePassword } = useAuth()
   const { toast } = useToast()

@@ -58,15 +58,15 @@
 /* Checked */
 .cl-switch > input:checked {
   right: -10px;
-  background-color: #85b8b7;
+  background-color: var(--ready);
 }
 
 .cl-switch > input:checked + span::before {
-  background-color: #85b8b7;
+  background-color: var(--ready);
 }
 
 .cl-switch > input:checked + span::after {
-  background-color: #018786;
+  background-color: var(--ready);
   transform: translateX(16px);
 }
 /* Hover, Focus */
@@ -93,7 +93,7 @@
 }
 
 .cl-switch > input:checked:active + span::before {
-  background-color: #85b8b7;
+  background-color: var(--ready);
 }
 /* Disabled */
 .cl-switch > input:disabled {
@@ -105,14 +105,14 @@
 }
 
 .cl-switch > input:checked:disabled + span::before {
-  background-color: #bfdbda;
+  background-color: var(--ready-soft);
 }
 
 .cl-switch > input:checked:disabled + span::after {
-  background-color: #61b5b4;
+  background-color: var(--ready);
 }
 
-/* ---- 追加：暗色文字 ---- */
+/* ---- 追加：暗色文�?---- */
 .cl-switch > span {
   color: #334155;
   font-size: 14px;

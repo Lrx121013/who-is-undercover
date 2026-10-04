@@ -1,4 +1,4 @@
-/* From Uiverse.io by liyaxu123 - 逐字浮动标签输入框 */
+/* From Uiverse.io by liyaxu123 - 逐字浮动标签输入�?*/
 .form-control {
   position: relative;
   margin: 20px 0 40px;
@@ -49,18 +49,18 @@
 }
 :root:not(.dark) .form-control input {
   border-bottom-color: rgba(15, 23, 42, 0.35);
-  color: #0f172a;
+  color: var(--ink);
 }
 :root:not(.dark) .form-control label span {
   color: rgba(15, 23, 42, 0.45);
 }
 :root:not(.dark) .form-control input:focus,
 :root:not(.dark) .form-control input:valid {
-  border-bottom-color: #0284c7;
+  border-bottom-color: var(--accent);
 }
 :root:not(.dark) .form-control input:focus + label span,
 :root:not(.dark) .form-control input:valid + label span {
-  color: #0284c7;
+  color: var(--accent);
 }
 .dark .form-control input {
   border-bottom-color: rgba(255, 255, 255, 0.4);

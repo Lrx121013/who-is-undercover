@@ -7,7 +7,7 @@
   transition: 0.3s ease;
   background: linear-gradient(
     to bottom right,
-    #2e8eff 0%,
+    var(--accent) 0%,
     rgba(46, 142, 255, 0) 30%
   );
   background-color: rgba(46, 142, 255, 0.2);
@@ -27,7 +27,7 @@
   width: 127px;
   height: 47px;
   border-radius: 13px;
-  background-color: #1a1a1a;
+  background-color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +42,7 @@
   fill: #fff;
 }
 
-/* ---- 追加：小尺寸与头像 ---- */
+/* ---- 追加：小尺寸与头�?---- */
 .user-profile--sm {
   width: 44px;
   height: 44px;

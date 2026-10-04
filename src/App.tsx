@@ -1,13 +1,16 @@
+import { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './hooks/useAuth'
 import { ToastProvider } from './hooks/useToast'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
+import PencilLoader from './components/ui/PencilLoader'
 
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import AuthCallback from './pages/AuthCallback'
+import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Home from './pages/Home'
@@ -30,7 +33,29 @@ import Achievements from './pages/Achievements'
 import Settings from './pages/Settings'
 
 export default function App() {
+  const [intro, setIntro] = useState(() => {
+    try {
+      return !sessionStorage.getItem('wiu_intro_seen')
+    } catch {
+      return false
+    }
+  })
+
+  useEffect(() => {
+    if (!intro) return
+    const t = setTimeout(() => {
+      setIntro(false)
+      try {
+        sessionStorage.setItem('wiu_intro_seen', '1')
+      } catch {
+        /* ignore */
+      }
+    }, 2400)
+    return () => clearTimeout(t)
+  }, [intro])
+
   return (
+    <>
     <ToastProvider>
       <AuthProvider>
         <Routes>
@@ -39,6 +64,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
@@ -74,6 +100,8 @@ export default function App() {
           <Route path="*" element={<Landing />} />
         </Routes>
       </AuthProvider>
-    </ToastProvider>
+      </ToastProvider>
+      {intro && <PencilLoader fullscreen text="正在洗牌，准备出题…" />}
+    </>
   )
 }

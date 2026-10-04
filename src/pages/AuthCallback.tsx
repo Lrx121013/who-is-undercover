@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { nhost } from '../lib/nhost'
 import { useToast } from '../hooks/useToast'
 import { SpotlightLoader } from '../components/ui'
 
-/** OAuth（Microsoft）回调：SDK 依据 URL 中的 code / hash 自动换取会话后跳转首页 */
+/** OAuth / 魔法链接回调：Nhost 会从 URL 解析 token 自动建会话后跳转首页 */
 export default function AuthCallback() {
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -12,7 +12,6 @@ export default function AuthCallback() {
 
   useEffect(() => {
     let alive = true
-
     const params = new URLSearchParams(window.location.search)
     const errDesc = params.get('error_description') || params.get('error')
     if (errDesc) {
@@ -21,29 +20,23 @@ export default function AuthCallback() {
       return
     }
 
-    const go = () => {
-      if (alive) navigate('/home', { replace: true })
+    if (nhost.auth.isAuthenticated()) {
+      navigate('/home', { replace: true })
+      return
     }
-
-    // 已存在会话（隐式流程或二次进入）
-    void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) go()
+    const unsub = nhost.auth.onAuthStateChanged((_e, s) => {
+      if (s) navigate('/home', { replace: true })
     })
-    // PKCE 换码完成后会触发 SIGNED_IN
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      if (s) go()
-    })
-
-    const timer = window.setTimeout(() => {
-      if (alive) setText('登录超时，正在返回…')
-    }, 8000)
-    const fallback = window.setTimeout(() => {
-      if (alive) navigate('/login', { replace: true })
-    }, 10000)
+    const timer = window.setTimeout(() => alive && setText('登录超时，正在返回…'), 8000)
+    const fallback = window.setTimeout(() => alive && navigate('/login', { replace: true }), 10000)
 
     return () => {
       alive = false
-      sub.subscription.unsubscribe()
+      try {
+        ;(unsub as any)?.()
+      } catch {
+        /* noop */
+      }
       window.clearTimeout(timer)
       window.clearTimeout(fallback)
     }

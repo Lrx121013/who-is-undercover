@@ -31,6 +31,9 @@ export default function Rooms() {
 
   useEffect(() => {
     void load()
+    const t = setInterval(() => void load(), 10000)
+    return () => clearInterval(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const enter = async (room: Room) => {

@@ -1,4 +1,4 @@
-/* From Uiverse.io by VijinV - 浮动标签输入框 */
+/* From Uiverse.io by VijinV - 浮动标签输入�?*/
 .inputbox {
   position: relative;
   width: 196px;
@@ -12,7 +12,7 @@
   outline: none;
   box-shadow: none;
   border: none;
-  color: #23242a;
+  color: var(--ink);
   font-size: 1em;
   letter-spacing: 0.05em;
   transition: 0.5s;
@@ -32,7 +32,7 @@
 
 .inputbox input:valid ~ span,
 .inputbox input:focus ~ span {
-  color: #45f3ff;
+  color: var(--accent);
   transform: translateX(-10px) translateY(-34px);
   font-size: 0, 75em;
 }
@@ -43,7 +43,7 @@
   bottom: 0;
   width: 100%;
   height: 2px;
-  background: #45f3ff;
+  background: var(--accent);
   border-radius: 4px;
   transition: 0.5s;
   pointer-events: none;
@@ -64,7 +64,7 @@
 }
 .dark .inputbox input:valid ~ span,
 .dark .inputbox input:focus ~ span {
-  color: #45f3ff;
+  color: var(--accent);
 }
 .inputbox__right {
   position: absolute;
@@ -83,5 +83,5 @@
 .inputbox__error {
   margin-top: 6px;
   font-size: 12px;
-  color: #f43f5e;
+  color: var(--danger);
 }

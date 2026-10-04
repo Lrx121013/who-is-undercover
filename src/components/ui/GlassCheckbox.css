@@ -44,7 +44,7 @@
   inset: 0;
   background: radial-gradient(
     circle at center,
-    rgba(200, 240, 96, 0.35) 0%,
+    var(--ready-soft) 0%,
     transparent 70%
   );
   opacity: 0;
@@ -55,16 +55,16 @@
 }
 
 .gl-checkbox:hover .gl-checkbox__box {
-  border-color: rgba(200, 240, 96, 0.35);
+  border-color: var(--ready-soft);
   transform: scale(1.06);
 }
 
 .gl-checkbox__input:checked ~ .gl-checkbox__box {
-  background: linear-gradient(135deg, #c8f060, #60f0b8);
+  background: linear-gradient(135deg, var(--ready), var(--ready));
   border-color: transparent;
   box-shadow:
-    0 0 0 3px rgba(200, 240, 96, 0.15),
-    0 4px 14px rgba(200, 240, 96, 0.3);
+    0 0 0 3px var(--ready-soft),
+    0 4px 14px var(--ready-soft);
   transform: scale(1.05);
 }
 

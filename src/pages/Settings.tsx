@@ -13,7 +13,7 @@ import {
   DoodleButton,
 } from '../components/ui'
 import { updateProfile } from '../lib/api'
-import { supabase } from '../lib/supabase'
+import { nhost } from '../lib/nhost'
 
 /** 设置：主题开关 + 偏好开关组 + 玻璃拟态隐私多选 + 账号安全 */
 export default function Settings() {
@@ -54,7 +54,7 @@ export default function Settings() {
 
   const bindEmail = async () => {
     if (!/^\S+@\S+\.\S+$/.test(email)) return toast('邮箱格式不正确', 'error')
-    const { error } = await supabase.auth.updateUser({ email })
+    const { error } = await nhost.auth.changeEmail({ newEmail: email } as any)
     if (error) return toast(error.message, 'error')
     toast('绑定邮件已发送，验证后即可转正', 'success')
   }

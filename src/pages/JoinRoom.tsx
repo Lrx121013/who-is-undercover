@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../hooks/useToast'
 import { PageHeader } from '../components/Layout'
@@ -14,11 +14,19 @@ export default function JoinRoom() {
   const [needPwd, setNeedPwd] = useState(false)
   const [joining, setJoining] = useState(false)
 
-  const check = async (c: string) => {
-    if (c.trim().length < 4) return
-    const room = await getRoomByCode(c.trim().toUpperCase())
-    if (room?.password) setNeedPwd(true)
-  }
+  // 防抖查房间，别每击一键都打一次后端
+  useEffect(() => {
+    const c = code.trim()
+    if (c.length < 4) {
+      setNeedPwd(false)
+      return
+    }
+    const t = setTimeout(async () => {
+      const room = await getRoomByCode(c.toUpperCase())
+      setNeedPwd(!!room?.password)
+    }, 400)
+    return () => clearTimeout(t)
+  }, [code])
 
   const submit = async () => {
     if (code.trim().length < 4) {
@@ -44,10 +52,7 @@ export default function JoinRoom() {
         <FloatingInput
           label="6 位房间号"
           value={code}
-          onChange={(v) => {
-            setCode(v.toUpperCase())
-            void check(v)
-          }}
+          onChange={(v) => setCode(v.toUpperCase())}
           onEnter={submit}
           maxLength={6}
           full

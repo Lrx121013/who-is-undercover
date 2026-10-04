@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import MicrosoftButton from '../components/MicrosoftButton'
+import { createVerificationEmail } from '../lib/verifyEmail'
 import { DoodleButton, GoBackButton } from '../components/ui'
 
 export default function Register() {
@@ -39,7 +40,8 @@ export default function Register() {
     if (password !== confirm) return setError('两次输入的密码不一致')
     setLoading(true)
     try {
-      await signUp(email.trim(), password, nickname.trim())
+      const { uid } = await signUp(email.trim(), password, nickname.trim())
+      if (uid) await createVerificationEmail(uid, email.trim(), nickname.trim())
       setNeedsEmailConfirm(true)
       toast('注册成功！请前往邮箱点击验证链接以激活账号', 'success')
     } catch (e) {

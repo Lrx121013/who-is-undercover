@@ -1,4 +1,4 @@
-/* From Uiverse.io by Galahhad - 昼夜主题开关 */
+/* From Uiverse.io by Galahhad - 昼夜主题开�?*/
 .theme-switch {
   --toggle-size: 30px;
   --container-width: 5.625em;
@@ -8,7 +8,7 @@
   --container-night-bg: #1d1f2c;
   --circle-container-diameter: 3.375em;
   --sun-moon-diameter: 2.125em;
-  --sun-bg: #ecca2f;
+  --sun-bg: var(--accent);
   --moon-bg: #c4c9d1;
   --spot-color: #959db1;
   --circle-container-offset: calc(

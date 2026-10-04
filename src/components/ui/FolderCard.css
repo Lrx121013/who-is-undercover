@@ -1,4 +1,4 @@
-/* From Uiverse.io by byllzz - 3D 文件夹卡片 */
+/* From Uiverse.io by byllzz - 3D 文件夹卡�?*/
 /* Note: all animations will works when you click not hover, I use just active state to make the folder card stay open...  I Hope you like this design... */
 
 .folder-card {
@@ -39,7 +39,7 @@
     "Inter",
     -apple-system,
     sans-serif;
-  color: #60a5fa;
+  color: var(--accent);
   font-size: 10px;
   font-weight: 900;
   text-decoration: underline;
@@ -117,7 +117,7 @@
   position: absolute;
   top: -95px;
   right: -75px;
-  background-color: #a18cd1;
+  background-color: var(--info);
 
   padding: 4px 8px;
   border-radius: 50px;
@@ -144,10 +144,10 @@
 .status-dot {
   width: 6px;
   height: 6px;
-  background: #34d399;
+  background: var(--ready);
   border-radius: 50%;
   position: relative;
-  box-shadow: 0 0 10px #34d399;
+  box-shadow: 0 0 10px var(--ready);
 }
 
 .status-dot::after {
@@ -157,7 +157,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #34d399;
+  background: var(--ready);
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
@@ -191,13 +191,13 @@
 
 .counter:hover {
   background: rgba(255, 255, 255, 0.2);
-  border-color: #60a5fa;
+  border-color: var(--accent);
   transform: scale(1.1) translateY(-5px) !important;
   cursor: help;
 }
 
 .counter:hover .counter-number {
-  color: #60a5fa;
+  color: var(--accent);
   transition: color 0.3s ease;
 }
 
@@ -218,27 +218,27 @@
 }
 
 .file-1 {
-  background: #ff5f6d;
+  background: var(--danger);
   z-index: 25;
   transition-delay: 0.15s;
 }
 .file-2 {
-  background: #ffc371;
+  background: var(--accent);
   z-index: 24;
   transition-delay: 0.1s;
 }
 .file-3 {
-  background: #4facfe;
+  background: var(--info);
   z-index: 23;
   transition-delay: 0.05s;
 }
 .file-4 {
-  background: #00f2fe;
+  background: var(--info);
   z-index: 22;
   transition-delay: 0.02s;
 }
 .file-5 {
-  background: #a18cd1;
+  background: var(--info);
   z-index: 21;
   transition-delay: 0s;
 }
@@ -374,7 +374,7 @@
   left: 10%;
   width: 30px;
   height: 25px;
-  background-color: #60a5fa;
+  background-color: var(--accent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 20px;
@@ -415,7 +415,7 @@
 
 .folder-toggle:checked ~ .folder-container .folder-search:focus-within {
   width: 90%;
-  background-color: #ff3b30;
+  background-color: var(--danger);
 }
 
 .folder-toggle:checked

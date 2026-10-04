@@ -24,6 +24,7 @@ export interface Profile {
   win_count: number
   short_id?: string
   show_online?: boolean
+  email_verified?: boolean
   created_at: string
 }
 

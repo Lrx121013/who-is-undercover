@@ -1,15 +1,15 @@
 /* From Uiverse.io by himanshu9682 - 涂鸦线条按钮 */
 .doodle-scope .type--A {
-  --line_color: #555555;
-  --back_color: #ffecf6;
+  --line_color: var(--ink);
+  --back_color: var(--accent-soft);
 }
 .doodle-scope .type--B {
-  --line_color: #1b1919;
-  --back_color: #e9ecff;
+  --line_color: var(--ink);
+  --back_color: var(--raised-2);
 }
 .doodle-scope .type--C {
-  --line_color: #00135c;
-  --back_color: #defffa;
+  --line_color: var(--accent);
+  --back_color: var(--accent-soft);
 }
 .doodle-scope .button {
   position: relative;

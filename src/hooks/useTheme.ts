@@ -1,10 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-type Theme = 'light' | 'dark'
+export type Theme = 'light' | 'dark'
 
+const KEY = 'wiu-theme'
+
+/** 与 index.html 的首帧脚本保持一致 */
 function readTheme(): Theme {
   try {
-    return (localStorage.getItem('theme') as Theme) || 'dark'
+    const saved = localStorage.getItem(KEY)
+    if (saved === 'light' || saved === 'dark') return saved
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
   } catch {
     return 'dark'
   }
@@ -16,12 +21,23 @@ export function useTheme() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
     try {
-      localStorage.setItem('theme', theme)
+      localStorage.setItem(KEY, theme)
     } catch {
-      /* noop */
+      /* 隐私模式下写入失败可忽略 */
     }
   }, [theme])
 
-  const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
-  return { theme, toggle }
+  // 另一标签页切了主题，这边跟着变
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== KEY) return
+      if (e.newValue === 'light' || e.newValue === 'dark') setTheme(e.newValue)
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+
+  const toggle = useCallback(() => setTheme((t) => (t === 'dark' ? 'light' : 'dark')), [])
+
+  return { theme, toggle, setTheme }
 }

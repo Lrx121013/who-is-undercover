@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import { PageHeader, EmptyState } from '../components/Layout'
 import { BrutalInput, Cards, DoodleButton } from '../components/ui'
-import { listMyPacks, listPublicPacks, likePack, deletePack } from '../lib/api'
+import { listMyPacks, listPublicPacks, likePack, deletePack, setPackPublic } from '../lib/api'
 import { cn } from '../lib/utils'
 import type { WordPack } from '../types/db'
 
@@ -131,8 +131,13 @@ export default function WordPacks() {
                 {!p.is_public && (
                   <button
                     onClick={async () => {
-                      await likePack(p.id)
-                      toast('已提交公开审核（演示）', 'info')
+                      try {
+                        await setPackPublic(p.id, true)
+                        toast('已公开到词库市场', 'success')
+                        void load()
+                      } catch (e) {
+                        toast((e as Error).message, 'error')
+                      }
                     }}
                     className="text-xs font-bold text-indigo-500 hover:underline"
                   >

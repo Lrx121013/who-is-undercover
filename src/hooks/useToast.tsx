@@ -1,14 +1,15 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { Toast } from '../components/primitives'
 
-interface Toast {
+interface Item {
   id: number
   text: string
   type: 'success' | 'error' | 'info'
 }
 
 interface ToastCtx {
-  toast: (text: string, type?: Toast['type']) => void
+  toast: (text: string, type?: Item['type']) => void
 }
 
 const Ctx = createContext<ToastCtx>({ toast: () => {} })
@@ -18,13 +19,20 @@ export function useToast() {
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([])
+  const [toasts, setToasts] = useState<Item[]>([])
   const idRef = useRef(0)
+  const timers = useRef<number[]>([])
 
-  const toast = useCallback((text: string, type: Toast['type'] = 'info') => {
+  const toast = useCallback((text: string, type: Item['type'] = 'info') => {
     const id = ++idRef.current
     setToasts((t) => [...t, { id, text, type }])
-    window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2600)
+    // 同一时刻最多留 3 条，再多就把最旧的挤掉
+    setToasts((t) => t.slice(-3))
+    const h = window.setTimeout(() => {
+      setToasts((t) => t.filter((x) => x.id !== id))
+      timers.current = timers.current.filter((x) => x !== h)
+    }, 3000)
+    timers.current.push(h)
   }, [])
 
   const value = useMemo(() => ({ toast }), [toast])
@@ -32,20 +40,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed bottom-24 left-1/2 z-[100] flex w-[min(92vw,420px)] -translate-x-1/2 flex-col items-center gap-2 md:bottom-8">
+      <div
+        aria-live="polite"
+        className="pointer-events-none fixed bottom-20 left-1/2 z-[100] flex w-[min(92vw,26rem)] -translate-x-1/2 flex-col items-center gap-2 md:bottom-8"
+      >
         {toasts.map((t) => (
-          <div
-            key={t.id}
-            className={[
-              'fade-up pointer-events-auto rounded-xl border px-4 py-2.5 text-sm font-semibold shadow-xl backdrop-blur-md',
-              t.type === 'success' &&
-                'border-emerald-400/40 bg-emerald-500/20 text-emerald-100',
-              t.type === 'error' && 'border-rose-400/40 bg-rose-500/20 text-rose-100',
-              t.type === 'info' && 'border-white/15 bg-black/60 text-white',
-            ].join(' ')}
-          >
+          <Toast key={t.id} kind={t.type}>
             {t.text}
-          </div>
+          </Toast>
         ))}
       </div>
     </Ctx.Provider>

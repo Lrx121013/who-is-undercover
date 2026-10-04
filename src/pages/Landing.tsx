@@ -1,181 +1,202 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
 import { useToast } from '../hooks/useToast'
-import { PencilLoader, DoodleButton, ThemeSwitch } from '../components/ui'
+import { Btn, CardPair, Rule } from '../components/primitives'
+import {
+  IconMoon,
+  IconSun,
+  IconCards,
+  IconClock,
+  IconVote,
+  IconUsers,
+  IconBook,
+  IconTrophy,
+} from '../components/icons'
+import { ROLE_DESC } from '../lib/game'
 
-const FEATURES = [
-  {
-    icon: '🎭',
-    title: '9 种角色',
-    desc: '平民 / 卧底 / 白板 / 侦探 / 双面人…自由搭配',
-  },
-  {
-    icon: '📚',
-    title: '词库市场',
-    desc: '系统词库 + 社区词库 + 自建词库一键导入',
-  },
-  {
-    icon: '⚖️',
-    title: '全自动主持',
-    desc: '发词 · 计时 · 投票 · 判胜负，一步到位',
-  },
-  {
-    icon: '🤝',
-    title: '好友开黑',
-    desc: '搜索加好友、邀请进房、默契度记录',
-  },
-  {
-    icon: '🏆',
-    title: '战绩成长',
-    desc: '排行榜、成就徽章、等级段位',
-  },
-  {
-    icon: '📝',
-    title: '复盘回放',
-    desc: '每轮发言顺序、投票、身份完整回放',
-  },
+const MECHANICS = [
+  { Icon: IconCards, title: '发词', desc: '按人数配好身份和词，人人有牌' },
+  { Icon: IconClock, title: '计时', desc: '轮到谁讲、还剩几秒，全房间同步' },
+  { Icon: IconVote, title: '投票', desc: '每人一票，实时统计谁最可疑' },
+  { Icon: IconUsers, title: '判胜负', desc: '自动结算，平票加时，赛后复盘' },
 ]
 
+const ROLES = ['undercover', 'white', 'detective', 'prophet', 'double', 'third_party'] as const
+
 export default function Landing() {
-  const [booting, setBooting] = useState(true)
-  const [showFeatures, setShowFeatures] = useState(false)
   const { theme, toggle } = useTheme()
   const { session, signInAsGuest } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
+  const dark = theme === 'dark'
 
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      setBooting(false)
-      setShowFeatures(true)
-    }, 1800)
-    return () => window.clearTimeout(t)
-  }, [])
-
+  // 已登录就别停在首屏
   useEffect(() => {
     if (session) navigate('/home', { replace: true })
   }, [session, navigate])
 
-  const guestPlay = async () => {
+  /** 一句话开局：没账号就先开游客身份，直接进建房 */
+  const start = async () => {
     try {
-      await signInAsGuest()
-      toast('游客模式开启，稍后可在设置中绑定邮箱转正', 'success')
-      navigate('/home')
+      if (!session) await signInAsGuest()
+      navigate('/rooms/create')
     } catch (e) {
+      navigate('/login')
       toast((e as Error).message, 'error')
     }
   }
 
-  if (booting) return <PencilLoader fullscreen text="谁是卧底出题器 加载中…" />
-
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* 顶部导航 */}
-      <div className="fixed top-0 z-50 w-full">
-        <div className="glass-card mx-4 mt-4 flex items-center justify-between rounded-2xl px-5 py-3 md:mx-auto md:max-w-5xl">
-          <span className="flex items-center gap-2 text-sm font-black tracking-tight">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-base shadow-lg shadow-indigo-500/25">
-              🕵️
+    <div className="flex min-h-screen flex-col">
+      {/* 顶栏 */}
+      <header className="border-b border-[var(--rule)]">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-5 md:px-8">
+          <span className="flex items-center gap-2.5">
+            <span className="grid h-7 w-7 place-items-center rounded-[5px] bg-[var(--danger)] text-[13px] font-bold text-white">
+              卧
             </span>
-            谁是卧底出题器
+            <span className="display text-body">谁是卧底</span>
           </span>
-          <div className="flex items-center gap-3">
+
+          <div className="ml-auto flex items-center gap-1">
             <button
-              onClick={() => navigate('/login')}
-              className="hidden rounded-xl px-4 py-2 text-xs font-bold text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white sm:block"
+              onClick={toggle}
+              aria-label={dark ? '切换到白桌（浅色）' : '切换到夜桌（深色）'}
+              title={dark ? '白桌 · 浅色' : '夜桌 · 深色'}
+              className="grid h-9 w-9 place-items-center rounded-card text-ink-2 transition-colors hover:bg-[var(--raised)] hover:text-[var(--ink)]"
+            >
+              {dark ? <IconSun size={19} /> : <IconMoon size={19} />}
+            </button>
+            <Link
+              to="/login"
+              className="rounded-card px-3 py-2 text-small font-semibold text-ink-2 transition-colors hover:bg-[var(--raised)] hover:text-[var(--ink)]"
             >
               登录
-            </button>
-            <ThemeSwitch checked={theme === 'dark'} onChange={toggle} />
+            </Link>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Hero 区域 */}
-      <div className="relative flex min-h-screen flex-col items-center justify-center px-5 pt-28 pb-16">
-        {/* 背景装饰 */}
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
-          <div className="absolute right-1/4 bottom-1/4 h-72 w-72 rounded-full bg-violet-500/10 blur-3xl" />
-        </div>
-
-        <div
-          className="glass-card mb-6 flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold"
-          style={{ animation: 'fadeUp .6s ease-out both' }}
-        >
-          <span className="h-2 w-2 rounded-full bg-emerald-400" style={{ animation: 'pulseSoft 2s ease-in-out infinite' }} />
-          派对主持系统 v1.0
-        </div>
-
-        <h1
-          className="text-center text-5xl leading-[1.1] tracking-tight md:text-7xl"
-          style={{ animation: 'fadeUp .7s ease-out .1s both' }}
-        >
-          <span className="font-black">谁是卧底</span>
-          <br />
-          <span className="gradient-text font-black">出题器</span>
-        </h1>
-
-        <p
-          className="mt-5 max-w-md text-center text-base leading-relaxed opacity-70 md:text-lg"
-          style={{ animation: 'fadeUp .7s ease-out .2s both' }}
-        >
-          不只是出题器——集「主持人 + 裁判 + 记分员 + 气氛组」于一体的
-          全流程派对主持系统
-        </p>
-
-        <div
-          className="mt-10 flex flex-col items-center gap-4"
-          style={{ animation: 'fadeUp .7s ease-out .35s both' }}
-        >
-          <div className="flex gap-3">
-            <DoodleButton variant="C" onClick={() => navigate('/login')}>
-              登 录
-            </DoodleButton>
-            <DoodleButton variant="A" onClick={() => navigate('/register')}>
-              注 册
-            </DoodleButton>
+      {/* Hero —— 记忆点是错位的两张牌，其余全部安静 */}
+      <section className="mx-auto w-full max-w-6xl px-5 pb-16 pt-14 md:px-8 md:pb-24 md:pt-20">
+        <div className="grid items-center gap-12 md:grid-cols-[auto_1fr] md:gap-16">
+          <div className="deal shrink-0 justify-self-center md:justify-self-start">
+            <CardPair top="白菜" bottom="白菜帮子" size="lg" />
           </div>
-          <button
-            onClick={guestPlay}
-            className="group flex items-center gap-1.5 text-sm font-bold opacity-60 transition hover:opacity-100"
-          >
-            游客试玩
-            <span className="transition group-hover:translate-x-1">→</span>
-          </button>
-        </div>
 
-        {/* 功能特性 */}
-        {showFeatures && (
-          <div
-            className="mt-16 grid w-full max-w-3xl grid-cols-2 gap-3 md:grid-cols-3"
-            style={{ animation: 'fadeUp .8s ease-out .5s both' }}
-          >
-            {FEATURES.map((f, i) => (
-              <div
-                key={f.title}
-                className="glass-card rounded-2xl p-5 transition-transform duration-300 hover:-translate-y-1"
-                style={{ animationDelay: `${.55 + i * .08}s`, animation: `fadeUp .6s ease-out ${.55 + i * .08}s both` }}
+          <div className="settle" style={{ animationDelay: '.08s' }}>
+            <h1 className="display text-hero">
+              谁是卧底
+            </h1>
+            <p className="mt-6 max-w-measure text-lead muted">
+              围坐一圈，人手一张牌。其中两张几乎一样 —— 那两张牌上的人，
+              此刻正在听你描述自己的词。
+            </p>
+            <p className="mt-4 max-w-measure text-body muted">
+              一台手机就能当裁判、记分员和气氛组：发词、计时、投票、判胜负，全都自动。
+            </p>
+
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Btn onClick={start} className="px-6 py-3">
+                开一局
+              </Btn>
+              <Link
+                to="/register"
+                className="rounded-card border border-[var(--rule-2)] px-4 py-2.5 text-body font-semibold transition-colors hover:border-[var(--ink-3)] hover:bg-[var(--raised-2)]"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/15 to-violet-500/15 text-xl">
-                  {f.icon}
-                </div>
-                <h3 className="mt-3 text-sm font-black tracking-tight">{f.title}</h3>
-                <p className="mt-1 text-xs leading-relaxed opacity-50">{f.desc}</p>
+                注册账号，保留战绩
+              </Link>
+            </div>
+            <p className="mt-4 text-small faint">没有账号也能先玩，房间随时能退出。</p>
+          </div>
+        </div>
+      </section>
+
+      <Rule />
+
+      {/* 一台手机顶四个岗 */}
+      <section className="mx-auto w-full max-w-6xl px-5 py-14 md:px-8 md:py-16">
+        <div className="grid gap-x-12 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
+          {MECHANICS.map(({ Icon, title, desc }) => (
+            <div key={title}>
+              <Icon size={22} className="text-[var(--accent)]" />
+              <h2 className="display mt-3.5 text-title">{title}</h2>
+              <p className="mt-2 text-small muted">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Rule />
+
+      {/* 角色 / 词库 / 战绩 */}
+      <section className="mx-auto grid w-full max-w-6xl gap-x-16 gap-y-12 px-5 py-14 md:grid-cols-2 md:px-8 md:py-16">
+        <div>
+          <h2 className="display text-title">角色自己配</h2>
+          <p className="mt-2 max-w-measure text-small muted">
+            经典局只有平民和卧底。想加花样，白板、侦探、预言家、双面人都能按人数塞进去。
+          </p>
+          <dl className="mt-6 divide-y divide-[var(--rule)] border-y border-[var(--rule)]">
+            {ROLES.map((r) => (
+              <div key={r} className="flex gap-4 py-3">
+                <dt className="w-14 shrink-0 text-small font-bold">
+                  {r === 'undercover' ? '卧底' : r === 'white' ? '白板' : r === 'detective' ? '侦探' : r === 'prophet' ? '预言家' : r === 'double' ? '双面人' : '第三方'}
+                </dt>
+                <dd className="min-w-0 flex-1 text-small muted">{ROLE_DESC[r]}</dd>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* 底部 */}
-        <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-2 text-center">
-          <p className="text-xs opacity-40">
-            React + Vite + Supabase · <Link to="/login" className="font-bold opacity-80 transition hover:opacity-100">开始游戏</Link>
-          </p>
+          </dl>
         </div>
-      </div>
+
+        <div>
+          <h2 className="display text-title">词不够用？自己建</h2>
+          <p className="mt-2 max-w-measure text-small muted">
+            词库按分类和难度抽词。觉得内置的不好笑，导入一套自己的，房间创建时直接选。
+          </p>
+          <dl className="mt-6 divide-y divide-[var(--rule)] border-y border-[var(--rule)]">
+            {[
+              { Icon: IconBook, t: '系统词库', d: '开箱即用，按难度分级' },
+              { Icon: IconUsers, t: '社区词库', d: '其他玩家公开分享的' },
+              { Icon: IconTrophy, t: '自建词库', d: '自己录入，可导出 JSON' },
+            ].map(({ Icon, t, d }) => (
+              <div key={t} className="flex items-start gap-4 py-3.5">
+                <Icon size={19} className="mt-0.5 shrink-0 text-ink-3" />
+                <div className="min-w-0">
+                  <dt className="text-small font-bold">{t}</dt>
+                  <dd className="mt-0.5 text-small muted">{d}</dd>
+                </div>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              to="/word-packs"
+              className="rounded-card border border-[var(--rule-2)] px-4 py-2.5 text-small font-semibold transition-colors hover:border-[var(--ink-3)] hover:bg-[var(--raised-2)]"
+            >
+              逛逛词库
+            </Link>
+            <Link
+              to="/friends"
+              className="rounded-card border border-[var(--rule-2)] px-4 py-2.5 text-small font-semibold transition-colors hover:border-[var(--ink-3)] hover:bg-[var(--raised-2)]"
+            >
+              叫上好友
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="mt-auto border-t border-[var(--rule)]">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-8 text-small faint md:px-8">
+          <span>谁是卧底 · 派对主持系统</span>
+          <span className="tnum">React · Vite · Nhost</span>
+          <Link to="/login" className="ml-auto underline underline-offset-4 hover:text-[var(--ink)]">
+            登录已有账号
+          </Link>
+        </div>
+      </footer>
     </div>
   )
 }

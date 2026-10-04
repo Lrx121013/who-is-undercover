@@ -4,8 +4,15 @@ import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../hooks/useToast'
 import { PageHeader, EmptyState } from '../components/Layout'
 import { Cards, DoodleButton, GlassCheckbox, StrokeCheckbox } from '../components/ui'
-import { listFriendProfiles, unfriend, blockUser, pushNotification } from '../lib/api'
-import { supabase } from '../lib/supabase'
+import {
+  listFriendProfiles,
+  unfriend,
+  blockUser,
+  pushNotification,
+  unblockUser,
+  listPlayingMemberIds,
+  listBlockedProfiles,
+} from '../lib/api'
 import { avatarDataUri, cn, formatTime } from '../lib/utils'
 import type { Profile } from '../types/db'
 
@@ -21,19 +28,17 @@ export default function Friends() {
   const [groups, setGroups] = useState({ online: true, playing: true, offline: true })
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [inviting, setInviting] = useState(false)
+  const [inviteCode, setInviteCode] = useState('')
 
   const load = async () => {
     setLoading(true)
     try {
-      const [list, playing] = await Promise.all([
+      const [list, playingRows] = await Promise.all([
         listFriendProfiles(),
-        supabase
-          .from('room_members')
-          .select('user_id, rooms!inner(status)')
-          .eq('rooms.status', 'playing'),
+        listPlayingMemberIds(),
       ])
       setFriends(list)
-      setPlayingIds(new Set(((playing.data ?? []) as { user_id: string }[]).map((r) => r.user_id)))
+      setPlayingIds(new Set(playingRows))
     } finally {
       setLoading(false)
     }
@@ -65,6 +70,7 @@ export default function Friends() {
 
   const inviteSelected = async () => {
     if (selected.size === 0) return toast('先勾选要邀请的好友', 'error')
+    if (!/^\d{4,8}$/.test(inviteCode)) return toast('先填你的房间号', 'error')
     if (!me) return
     setInviting(true)
     try {
@@ -72,7 +78,7 @@ export default function Friends() {
         [...selected].map((uid) =>
           pushNotification(uid, 'room_invite', {
             text: `${me.nickname} 邀请你加入房间`,
-            room_code: '',
+            room_code: inviteCode,
           }),
         ),
       )
@@ -185,7 +191,13 @@ export default function Friends() {
           </span>
           批量邀请好友进房间
         </h2>
-        <p className="mb-4 text-xs opacity-40">勾选好友后发送房间邀请通知</p>
+        <p className="mb-4 text-xs opacity-40">勾选好友，并填写你的房间号，把邀请发给他们</p>
+        <input
+          className="input-base mb-4 max-w-xs"
+          placeholder="你的房间号，如 123456"
+          value={inviteCode}
+          onChange={(e) => setInviteCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+        />
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
           {friends.map((f, i) => (
             <div key={f.id} className={`stagger-${(i % 6) + 1}`}>
@@ -215,12 +227,7 @@ export default function Friends() {
 function BlockList({ onChange }: { onChange: () => void }) {
   const [blocks, setBlocks] = useState<Profile[]>([])
   useEffect(() => {
-    supabase
-      .from('blocks')
-      .select('*, blocked:profiles!blocks_blocked_user_id_fkey(*)')
-      .then(({ data }) =>
-        setBlocks(((data ?? []) as unknown as { blocked: Profile }[]).map((b) => b.blocked)),
-      )
+    listBlockedProfiles().then(setBlocks)
   }, [])
   if (blocks.length === 0) return null
   return (
@@ -240,7 +247,7 @@ function BlockList({ onChange }: { onChange: () => void }) {
             {b.nickname}
             <button
               onClick={async () => {
-                await supabase.rpc('unblock_user', { target_id: b.id })
+                await unblockUser(b.id)
                 setBlocks((bs) => bs.filter((x) => x.id !== b.id))
                 onChange()
               }}

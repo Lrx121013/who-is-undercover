@@ -1,9 +1,9 @@
 /* From Uiverse.io by Smit-Prajapati - 奢华卡片 */
-/* 说明：原版用 #logo-main/#logo-second 全局 ID，改为类名以支持多实例 */
+/* 说明：原版用 #logo-main/#logo-second 全局 ID，改为类名以支持多实�?*/
 .luxury-scope .card {
   width: 300px;
   height: 200px;
-  background: #243137;
+  background: var(--raised);
   position: relative;
   display: grid;
   place-content: center;
@@ -18,20 +18,20 @@
 }
 
 .luxury-scope .logo-main {
-  fill: #bd9f67;
+  fill: var(--accent);
 }
 
 .luxury-scope .logo-second {
   padding-bottom: 10px;
   fill: none;
-  stroke: #bd9f67;
+  stroke: var(--accent);
   stroke-width: 1px;
 }
 
 .luxury-scope .border {
   position: absolute;
   inset: 0px;
-  border: 2px solid #bd9f67;
+  border: 2px solid var(--accent);
   opacity: 0;
   transform: rotate(10deg);
   transition: all 0.5s ease-in-out;
@@ -45,8 +45,8 @@
   font-size: 6px;
   text-transform: uppercase;
   padding: 0px 5px 0px 8px;
-  color: #bd9f67;
-  background: #243137;
+  color: var(--accent);
+  background: var(--raised);
   opacity: 0;
   letter-spacing: 7px;
   transition: all 0.5s ease-in-out;
@@ -90,7 +90,7 @@
   top: 50%;
   transform: translate(-50%, -50%);
   margin-top: 30px;
-  color: #bd9f67;
+  color: var(--accent);
   padding-left: 8px;
   font-size: 11px;
   opacity: 0;
@@ -135,11 +135,11 @@
   }
 
   10% {
-    border-right: 1px solid #bd9f67;
+    border-right: 1px solid var(--accent);
   }
 
   80% {
-    border-right: 1px solid #bd9f67;
+    border-right: 1px solid var(--accent);
   }
 
   100% {
@@ -152,7 +152,7 @@
     background: linear-gradient(
       90deg,
       rgba(189, 159, 103, 0) 90%,
-      rgb(189, 159, 103) 100%
+      var(--accent) 100%
     );
     opacity: 0;
   }
@@ -161,7 +161,7 @@
     background: linear-gradient(
       90deg,
       rgba(189, 159, 103, 0) 70%,
-      rgb(189, 159, 103) 100%
+      var(--accent) 100%
     );
     opacity: 1;
   }
@@ -170,7 +170,7 @@
     background: linear-gradient(
       90deg,
       rgba(189, 159, 103, 0) 70%,
-      rgb(189, 159, 103) 100%
+      var(--accent) 100%
     );
     opacity: 1;
   }
@@ -179,7 +179,7 @@
     background: linear-gradient(
       90deg,
       rgba(189, 159, 103, 0) 90%,
-      rgb(189, 159, 103) 100%
+      var(--accent) 100%
     );
     opacity: 0;
   }
@@ -187,5 +187,5 @@
 
 /* ---- 追加：深色底反色变体 ---- */
 .dark .luxury-scope .card {
-  background: #1a2430;
+  background: var(--ink);
 }

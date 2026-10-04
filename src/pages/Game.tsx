@@ -10,8 +10,10 @@ import {
   DoodleButton,
   EmojiBar,
   BrutalInput,
+  PencilLoader,
 } from '../components/ui'
 import SpeakTimer from '../components/SpeakTimer'
+import { IconGhost } from '../components/icons'
 import {
   getRoomByCode,
   getRoomById,
@@ -25,6 +27,7 @@ import {
   eliminateMember,
   investigate,
   subscribe,
+  finishGame,
 } from '../lib/api'
 import {
   checkWinner,
@@ -33,8 +36,7 @@ import {
   resolveVotes,
   roleLabel,
 } from '../lib/game'
-import { supabase } from '../lib/supabase'
-import { avatarDataUri, cn, mergeMessage, playBeep } from '../lib/utils'
+import { avatarDataUri, cn, playBeep } from '../lib/utils'
 import { usePrefs } from '../hooks/usePrefs'
 import type { Message, Room, RoomMember, VoteRow } from '../types/db'
 
@@ -106,9 +108,8 @@ export default function Game() {
     const un3 = subscribe('game-votes', 'votes', `room_id=eq.${room.id}`, () => {
       void listVotes(room.id, roundRef.current).then(setVotes)
     })
-    const un4 = subscribe('game-chat', 'messages', `room_id=eq.${room.id}`, (payload) => {
-      const row = (payload as { new: Message }).new
-      if (row) setMessages((m) => mergeMessage(m, row))
+    const un4 = subscribe('game-chat', 'messages', `room_id=eq.${room.id}`, () => {
+      void listMessages(room.id).then(setMessages)
     })
     return () => {
       un1()
@@ -203,8 +204,7 @@ export default function Game() {
   }
 
   const finishRpc = async (roomId: string, winner: string) => {
-    const { error } = await supabase.rpc('finish_game', { p_room: roomId, p_winner: winner })
-    if (error) throw new Error(error.message)
+    await finishGame(roomId, winner)
   }
 
   const settle = async () => {
@@ -286,7 +286,7 @@ export default function Game() {
 
   const tally = resolveVotes(votes, alive.map((m) => m.user_id))
 
-  if (loading) return <EmptyState text="进入对局…" />
+  if (loading) return <PencilLoader text="进入对局…" />
   if (!room)
     return (
       <EmptyState
@@ -327,8 +327,9 @@ export default function Game() {
       />
 
       {banner && (
-        <div className="glass-card flex flex-wrap items-center justify-center gap-3 border-rose-300/30 bg-rose-500/10 p-4 text-center text-sm font-bold text-rose-500 dark:text-rose-300">
-          💀 {banner}
+        <div className="flex flex-wrap items-center justify-center gap-3 rounded-panel border border-[var(--rule-2)] bg-[var(--raised)] p-4 text-center text-small font-semibold">
+          <IconGhost size={18} className="text-[var(--danger)]" />
+          {banner}
           <button className="text-xs opacity-50 hover:underline" onClick={() => setBanner(null)}>
             知道了
           </button>
@@ -361,7 +362,7 @@ export default function Game() {
                     onMouseLeave={() => setRevealWord(false)}
                     onTouchStart={() => setRevealWord(true)}
                     onTouchEnd={() => setRevealWord(false)}
-                    onClick={() => setRevealWord((v) => !v)}
+                    onContextMenu={(e) => e.preventDefault()}
                   >
                     {revealWord ? (
                       myMember.word

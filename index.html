@@ -1,11 +1,53 @@
 <!doctype html>
-<html lang="zh-CN" class="dark">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0a0e1a" />
-    <title>谁是卧底出题器 · 派对主持系统</title>
+    <meta name="theme-color" content="#0e1411" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#e7e7e2" media="(prefers-color-scheme: light)" />
+    <meta
+      name="description"
+      content="谁是卧底出题器：开房、计时、发词、投票、判胜负，一条龙派对主持系统。"
+    />
+    <title>谁是卧底 · 派对主持系统</title>
+
+    <!--
+      主题必须在首帧之前落到 <html class> 上，否则浅色用户会先看到一帧深色。
+      index.html 里不再硬编码 class="dark"，改由这段脚本决定。
+    -->
+    <script>
+      ;(function () {
+        try {
+          var t = localStorage.getItem('wiu-theme')
+          if (!t) {
+            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+          }
+          if (t === 'dark') document.documentElement.classList.add('dark')
+        } catch (e) {
+          document.documentElement.classList.add('dark')
+        }
+      })()
+    </script>
+
+    <!--
+      展示衬线体。异步加载：Google Fonts 在部分网络下不可达，
+      此时回退到系统宋体（Songti SC / SimSun），观感依然成立。
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&display=swap"
+      />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>
